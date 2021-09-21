@@ -1,0 +1,30 @@
+.__rs_table {
+  width: 100%;
+  box-sizing: border-box;
+  border-collapse: collapse;
+}
+
+.__rs_table tr th {
+  font-weight: bold;
+  text-align: left;
+}
+
+.__rs_table tr td {
+  font-weight: lighter;
+}
+
+.__rs_table tr th,
+.__rs_table tr td {
+  padding: 0.5rem;
+  border-top: 1px solid gainsboro;
+  border-left: 1px solid gainsboro;
+}
+
+.__rs_table tr th:last-child,
+.__rs_table tr td:last-child {
+  border-right: 1px solid gainsboro;
+}
+.__rs_table tr th:last-child,
+.__rs_table tr td:last-child {
+  border-bottom: 1px solid gainsboro;
+}

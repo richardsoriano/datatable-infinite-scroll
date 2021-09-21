@@ -1,17 +1,40 @@
-import React, { useState } from "react";
-import DataTable from "./datatable";
-import json from "../data/photos.json";
+import React, { useState, useEffect } from "react";
+import DataTable from "../ui/datatable";
+import Tr from "./tr";
+
+import json from "../data/people.json";
+
+import "./styles.css";
 
 function pageData({ data, per = 50, page = 1 }) {
-  debugger;
   return data.slice(per * (page - 1), per * page);
 }
 export default function App({}) {
   const [state, setState] = useState({
+    data: pageData({ data: json }),
     loading: false,
     page: 1,
-    photos: pageData({ data: json }),
+    sortedBy: { first_name: "ascending" },
+    newData: [],
   });
+
+  useEffect(() => {
+    if (!state.sortedBy) return;
+    const sortKey = Object.keys(state.sortedBy)[0];
+    const direction = state.sortedBy[sortKey];
+    setState((prev) => ({
+      ...prev,
+      data: json.sort((a, b) => {
+        return direction === "ascending"
+          ? b[sortKey] < a[sortKey]
+            ? 1
+            : -1
+          : b[sortKey] > a[sortKey]
+          ? 1
+          : -1;
+      }),
+    }));
+  }, [state.sortedBy]);
 
   function loadMore() {
     if (state.loading) return;
@@ -21,34 +44,47 @@ export default function App({}) {
     }));
 
     setState((prev) => ({
-      photos: [
-        ...prev.photos,
-        ...pageData({ data: json, page: prev.page + 1 }),
-      ],
+      ...prev,
+      data: [...prev.data, ...pageData({ data: json, page: prev.page + 1 })],
       loading: false,
       page: prev.page + 1,
     }));
   }
+
   return (
     <DataTable
       loadMore={loadMore}
-      items={state.photos}
+      items={state.data}
       renderHead={() => (
-        <tr>
-          <th>ID</th>
-          <th>Album ID</th>
-          <th>title</th>
-          <th>Thumbnail</th>
-        </tr>
+        <>
+          <Tr label='ID' />
+          <Tr
+            label='First name'
+            sortedBy={state.sortedBy}
+            sort={{ key: "first_name", changer: setState }}
+          />
+          <Tr
+            label='Last name'
+            sortedBy={state.sortedBy}
+            sort={{ key: "last_name", changer: setState }}
+          />
+          <Tr
+            label='Email'
+            sortedBy={state.sortedBy}
+            sort={{ key: "email", changer: setState }}
+          />
+          <Tr label='Gender' />
+          <Tr label='Ip Address' />
+        </>
       )}
       renderRow={(row) => (
         <tr>
           <td>{row.id}</td>
-          <td>{row.albumId}</td>
-          <td>{row.title}</td>
-          <td>
-            <img src={row.thumbnailUrl} alt='' />
-          </td>
+          <td>{row.first_name}</td>
+          <td>{row.last_name}</td>
+          <td>{row.email}</td>
+          <td>{row.gender}</td>
+          <td>{row.ip_address}</td>
         </tr>
       )}
     />

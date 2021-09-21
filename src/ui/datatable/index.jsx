@@ -1,5 +1,7 @@
 import React, { useEffect, useRef } from "react";
 
+import "./styles.css";
+
 export default function DataTable({ items, renderHead, renderRow, loadMore }) {
   const ref = useRef(null);
 
@@ -15,9 +17,9 @@ export default function DataTable({ items, renderHead, renderRow, loadMore }) {
     if (tbh - cY - thresh < 0) loadMore();
   }
   return (
-    <table>
+    <table className='__rs_table' cellPadding={0} cellSpacing={0}>
       <thead>
-        <tr>{renderHead}</tr>
+        <tr>{renderHead()}</tr>
       </thead>
       <tbody ref={ref}>{items.map((row) => renderRow(row))}</tbody>
     </table>
