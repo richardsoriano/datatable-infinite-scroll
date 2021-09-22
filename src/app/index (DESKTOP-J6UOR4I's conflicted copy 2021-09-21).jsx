@@ -18,18 +18,14 @@ export default function App({}) {
   });
 
   const [query, setQuery] = useState("");
-  const [additionalData, setAdditionalData] = useState([]);
-
-  const searchableColumns = ["first_name", "last_name", "email"];
 
   useEffect(() => {
     if (!state.sortedBy) return;
     const sortKey = Object.keys(state.sortedBy)[0];
     const direction = state.sortedBy[sortKey];
-
     setState((prev) => ({
       ...prev,
-      data: prev.data.sort((a, b) => {
+      data: json.sort((a, b) => {
         return direction === "ascending"
           ? b[sortKey] < a[sortKey]
             ? 1
@@ -41,30 +37,6 @@ export default function App({}) {
     }));
   }, [state.sortedBy]);
 
-  useEffect(() => {
-    // if (query.length < 3) return;
-    setState((prev) => ({
-      ...prev,
-      data: search(json),
-    }));
-  }, [query]);
-
-  function search(data) {
-    return data.filter((row) =>
-      searchableColumns.some(
-        (cols) =>
-          row[cols].toString().toLowerCase().indexOf(query.toLowerCase()) > -1
-      )
-    );
-  }
-
-  function toggleAdditionalData(row) {
-    setAdditionalData((prev) =>
-      additionalData.includes(row.id)
-        ? prev.filter((r) => row.id === r.id)
-        : [...prev, row.id]
-    );
-  }
   function loadMore() {
     if (state.loading) return;
     setState((prev) => ({
@@ -79,6 +51,30 @@ export default function App({}) {
       page: prev.page + 1,
     }));
   }
+
+  useEffect(() => {
+    if (query.length < 3) return;
+    setState((prev) => ({
+      ...prev,
+      data: json.filter((row) => {
+        return (
+          row.first_name
+            .toString()
+            .toLowerCase()
+            .indexOf(query.toString().toLowerCase()) > -1 ||
+          row.last_name
+            .toString()
+            .toLowerCase()
+            .indexOf(query.toString().toLowerCase()) > -1 ||
+          row.email_name
+            .toString()
+            .toLowerCase()
+            .indexOf(query.toString().toLowerCase()) > -1
+        );
+      }),
+    }));
+  }, [query]);
+
   return (
     <>
       <TextField
@@ -108,25 +104,18 @@ export default function App({}) {
               sort={{ key: "email", changer: setState }}
             />
             <Tr label='Gender' />
+            <Tr label='Ip Address' />
           </>
         )}
         renderRow={(row) => (
-          <>
-            <tr>
-              <td onClick={() => toggleAdditionalData(row)}>{row.id}</td>
-              <td onClick={() => toggleAdditionalData(row)}>
-                {row.first_name}
-              </td>
-              <td onClick={() => toggleAdditionalData(row)}>{row.last_name}</td>
-              <td onClick={() => toggleAdditionalData(row)}>{row.email}</td>
-              <td onClick={() => toggleAdditionalData(row)}>{row.gender}</td>
-            </tr>
-            {additionalData.includes(row.id) ? (
-              <tr>
-                <td colSpan={6}>{row.ip_address}</td>
-              </tr>
-            ) : null}
-          </>
+          <tr>
+            <td>{row.id}</td>
+            <td>{row.first_name}</td>
+            <td>{row.last_name}</td>
+            <td>{row.email}</td>
+            <td>{row.gender}</td>
+            <td>{row.ip_address}</td>
+          </tr>
         )}
       />
     </>

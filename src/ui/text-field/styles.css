@@ -1,0 +1,8 @@
+.__rs_text-field {
+  width: 100%;
+  padding: "0.5rem";
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+  border: 1px solid lightskyblue;
+  box-sizing: border-box;
+}
